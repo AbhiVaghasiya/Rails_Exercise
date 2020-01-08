@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>User:</strong>
+  <%= @book.User %>
+</p>
+
+<p>
+  <strong>Book:</strong>
+  <%= @book.Book_id %>
+</p>
+
+<p>
+  <strong>Book name:</strong>
+  <%= @book.Book_name %>
+</p>
+
+<p>
+  <strong>Book cost:</strong>
+  <%= @book.Book_cost %>
+</p>
+
+<%= link_to 'Edit', edit_book_path(@book) %> |
+<%= link_to 'Back', books_path %>

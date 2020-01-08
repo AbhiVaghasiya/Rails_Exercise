@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  project_id: 1
+  title: MyString
+  description: MyText
+  status: MyString
+  user_id: 1
+  start_date: 2019-11-22
+  end_date: 2019-11-22
+  spend_time: 
+  estimated_time: 
+
+two:
+  project_id: 1
+  title: MyString
+  description: MyText
+  status: MyString
+  user_id: 1
+  start_date: 2019-11-22
+  end_date: 2019-11-22
+  spend_time: 
+  estimated_time: 

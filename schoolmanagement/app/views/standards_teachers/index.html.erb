@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Standards Teachers</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Standard</th>
+      <th>Teacher</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @standards_teachers.each do |standards_teacher| %>
+      <tr>
+        <td><%= standards_teacher.standard_id_id %></td>
+        <td><%= standards_teacher.teacher_id_id %></td>
+        <td><%= link_to 'Show', standards_teacher %></td>
+        <td><%= link_to 'Edit', edit_standards_teacher_path(standards_teacher) %></td>
+        <td><%= link_to 'Destroy', standards_teacher, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Standards Teacher', new_standards_teacher_path %>

@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  description: MyText
+  manajor_id: 1
+  website: MyString
+  strat_date: 2019-11-22
+  end_date: 2019-11-22
+  active: false
+
+two:
+  title: MyString
+  description: MyText
+  manajor_id: 1
+  website: MyString
+  strat_date: 2019-11-22
+  end_date: 2019-11-22
+  active: false

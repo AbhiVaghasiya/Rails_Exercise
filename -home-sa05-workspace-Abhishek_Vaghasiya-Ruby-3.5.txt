@@ -1,0 +1,241 @@
+rails g scaffold User name:string mobile:decimal country:string state:string city:string gender:string email:string role:string
+
+rails g scaffold Project title:string description:text manager_id:integer website:string start_date:datetime end_date:datetime active:boolean
+
+rails g scaffold ProjectsUser project:references user:references
+
+rails g scaffold Task project:references title:string description:text status:string user:references start_date:datetime end_date:datetime spend_time:decimal estimated_time:decimal
+
+rails g scaffold Note task:references body:text user:references
+
+User
+model
+class User < ApplicationRecord
+  has_many :notes, dependent: :destroy
+  # has_and_belongs_to_many :projects
+  has_many :tasks, dependent: :destroy
+
+  validates :name, :role, presence: true
+  validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, on: :create }
+  validates :gender, inclusion: { in: %w(M F), message: "only allows M or F" }
+  validates :mobile, length: { minimum: 10 , maximum: 15 }
+  # validates :password, confirmation: true
+
+  after_destroy :user_destroy_message
+
+  after_save :notifi_user
+
+  after_initialize :set_gender
+
+  def set_gender
+    puts "I am on set gender"
+    self.gender = 'M' if self.gender.blank?
+  end
+
+  def set_country
+    self.country = 'India' if self.country.blank?
+  end
+
+  def set_state
+    self.state = 'Gujrat' if self.state.blank?
+  end
+
+  def set_city
+    self.city = 'Surat' if self.city.blank?
+  end
+
+  def notifi_user
+    # Send Email code
+  end
+
+  def user_destroy_message
+    puts 'User destroyed'
+  end
+end
+
+migrate
+class CreateUsers < ActiveRecord::Migration[6.0]
+  def change
+    create_table :users do |t|
+      t.string :name , limite: 100
+      t.string :mobile , limite: 15
+      t.string :country , limite: 20
+      t.string :state , limite: 20
+      t.string :city , limite: 20
+      t.string :gender , limite: 1
+      t.string :email , limite: 100
+      t.string :role , limite: 10
+
+      t.timestamps
+    end
+  end
+end
+
+
+
+
+
+
+project
+model
+class Project < ApplicationRecord
+  has_and_belongs_to_many :users
+  belongs_to :manager, class_name: "User", optional: true
+  has_many :tasks, counter_cache: true
+
+  validates :title, presence: true
+  validates :start_date, presence: true
+  validates :description, length: { maximum: 500 }
+  validates :website, format: { with: /(^$)|(^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/.*)?$)/ix }, uniqueness: true
+
+  before_validation :set_start_date
+
+  after_destroy :project_destroy_message
+
+  def set_start_date
+    self.start_date = Time.now if self.start_date.blank?
+  end
+
+  def project_destroy_message
+    puts "Project destroyed"
+  end
+end
+
+migrate
+class CreateProjects < ActiveRecord::Migration[6.0]
+  def change
+    create_table :projects do |t|
+      t.string :title
+      t.text :description
+      t.integer :manager_id
+      t.string :website
+      t.datetime :start_date
+      t.datetime :end_date
+      t.boolean :active
+
+      t.timestamps
+    end
+  end
+end
+
+
+
+
+
+
+
+project_user
+model
+class ProjectsUser < ApplicationRecord
+  belongs_to :project
+  belongs_to :user
+
+  validates :project_id, uniqueness { scope: :user_id }
+end
+
+migrate
+class CreateProjectUsers < ActiveRecord::Migration[6.0]
+  def change
+    create_table :project_users do |t|
+      t.integer :project_id
+      t.integer :user_id
+
+      t.timestamps
+    end
+  end
+end
+
+
+
+
+
+
+
+task
+model
+class Task < ApplicationRecord
+  belongs_to :project
+  belongs_to :user
+
+  validates :title,:status,:start_date,:estimated_time, presence: true
+  validates :description, length: { maximum: 500 }
+
+  before_validation :set_status
+
+  before_validation :set_start_date
+
+  after_destroy :task_destroy_message
+
+  def set_status
+    self.status = 'Active' if self.status.blank?
+  end
+
+  def set_start_date
+    self.start_date = Time.now if self.start_date.blank?
+  end
+
+  def task_destroy_message
+    puts 'Task destroyed'
+  end
+end
+
+migrate
+class CreateTasks < ActiveRecord::Migration[6.0]
+  def change
+    create_table :tasks do |t|
+      t.integer :project_id
+      t.string :title
+      t.text :description
+      t.string :status
+      t.integer :user_id
+      t.datetime :start_date
+      t.datetime :end_date
+      t.decimal :spend_time
+      t.decimal :estimated_time
+
+      t.timestamps
+    end
+  end
+end
+
+
+
+
+
+
+note
+model
+class Note < ApplicationRecord
+  belongs_to :user#, -> { includes :projects }
+  belongs_to :task, counter_cache: true
+
+  validates :task_id, uniqueness: { scope: :user_id }
+  validates :body, length: { maximum: 1000 }, allow_blank: true
+
+  after_save :set_body
+
+  after_destroy :note_destroy_message
+
+  def set_body
+    puts "Created a new note"
+  end
+
+  def note_destroy_message
+    puts 'Note destroyed'
+  end
+end
+
+
+migrate
+class CreateNotes < ActiveRecord::Migration[6.0]
+  def change
+    create_table :notes do |t|
+      t.integer :task_id
+      t.text :body
+      t.integer :user_id
+
+      t.timestamps
+    end
+  end
+end
+
